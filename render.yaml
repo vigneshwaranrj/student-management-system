@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: student-management-system
+    runtime: python
+    rootDir: uitproject
+    buildCommand: ./build.sh
+    startCommand: gunicorn project.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DB_SSL
+        value: "true"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
