@@ -1,0 +1,31 @@
+{% extends "students/base.html" %}
+
+{% block title %}Sign in · Student Desk{% endblock %}
+
+{% block content %}
+<section class="login-layout">
+    <div class="login-art">
+        <div class="login-art-mark">S</div>
+        <p class="eyebrow">STUDENT DESK</p>
+        <h1>Make room for<br>what matters.</h1>
+        <p>One calm place to keep your student records organized and up to date.</p>
+        <div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div>
+    </div>
+    <form class="panel login-panel" method="post">
+        {% csrf_token %}
+        <p class="eyebrow">WELCOME BACK</p>
+        <h2>Sign in to your account</h2>
+        <p class="muted">Use your staff username and password to continue.</p>
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button class="button button-dark login-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+    </form>
+</section>
+{% endblock %}

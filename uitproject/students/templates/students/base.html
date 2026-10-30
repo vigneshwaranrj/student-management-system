@@ -1,0 +1,38 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Student Directory{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'students/styles.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{% url 'students:dashboard' %}"><span class="brand-mark">S</span> Student Desk</a>
+        {% if request.user.is_authenticated %}
+        <nav class="main-nav" aria-label="Main navigation">
+            <a class="{% if request.resolver_match.url_name == 'dashboard' %}nav-active{% endif %}" href="{% url 'students:dashboard' %}">Overview</a>
+            <a class="{% if request.resolver_match.url_name == 'list' %}nav-active{% endif %}" href="{% url 'students:list' %}">Students</a>
+            {% if request.user.is_superuser %}<a class="{% if 'staff-' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'students:staff-list' %}">Team</a>{% endif %}
+        </nav>
+        <div class="header-actions">
+            <a class="button button-light" href="{% url 'students:create' %}">Add student <span aria-hidden="true">+</span></a>
+            <form method="post" action="{% url 'students:logout' %}">
+                {% csrf_token %}
+                <button class="logout-button" type="submit" title="Sign out">Sign out</button>
+            </form>
+        </div>
+        {% endif %}
+    </header>
+    <main class="page">
+        {% if messages %}
+            <div class="messages" aria-live="polite">
+                {% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">Student Desk <span>·</span> A clear view of every learner</footer>
+</body>
+</html>

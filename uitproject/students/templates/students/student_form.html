@@ -1,0 +1,30 @@
+{% extends "students/base.html" %}
+
+{% block title %}{% if object %}Edit student{% else %}Add student{% endif %} · Student Desk{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'students:list' %}">Students</a> / {% if object %}Edit{% else %}Add{% endif %}</p>
+<section class="form-layout">
+    <div class="form-intro">
+        <p class="eyebrow">{% if object %}UPDATE RECORD{% else %}NEW RECORD{% endif %}</p>
+        <h1>{% if object %}Edit student{% else %}Add a student{% endif %}</h1>
+        <p class="muted">Enter the student's details below. Fields marked required must be filled in.</p>
+    </div>
+    <form class="panel form-panel" method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="form-actions">
+            <a class="button button-quiet" href="{% if object %}{% url 'students:detail' object.pk %}{% else %}{% url 'students:list' %}{% endif %}">Cancel</a>
+            <button class="button button-dark" type="submit">{% if object %}Save changes{% else %}Add student{% endif %}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "students/base.html" %}
+
+{% block title %}Team · Student Desk{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">ADMINISTRATION / TEAM</p>
+        <h1>Staff accounts</h1>
+        <p class="muted">Create and manage who can access student records.</p>
+    </div>
+    <a class="button button-dark" href="{% url 'students:staff-create' %}"><span aria-hidden="true">+</span> Add staff account</a>
+</section>
+
+<section class="panel team-panel">
+    <div class="table-caption"><span><strong>{{ staff_accounts|length }}</strong> staff account{{ staff_accounts|length|pluralize }}</span><span>Only superusers can manage this team</span></div>
+    {% if staff_accounts %}
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Account</th><th>Email</th><th>Access</th><th>Status</th><th><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody>
+                {% for account in staff_accounts %}
+                <tr>
+                    <td><strong class="account-name">{{ account.get_full_name|default:account.username }}</strong><small class="account-username">@{{ account.username }}</small></td>
+                    <td>{{ account.email|default:"—" }}</td>
+                    <td>{% if account.is_superuser %}<span class="role-tag role-owner">Superuser</span>{% else %}<span class="role-tag">Staff admin</span>{% endif %}</td>
+                    <td><span class="status-pill {% if account.is_active %}status-active{% else %}status-inactive{% endif %}">{{ account.is_active|yesno:"Active,Inactive" }}</span></td>
+                    <td class="team-action">
+                        {% if not account.is_superuser and account.pk != request.user.pk %}
+                        <form method="post" action="{% url 'students:staff-toggle-active' account.pk %}">
+                            {% csrf_token %}
+                            <button class="text-action {% if account.is_active %}danger-link{% endif %}" type="submit">{% if account.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                        </form>
+                        {% else %}<span class="account-protected">{% if account.is_superuser %}Protected{% else %}You{% endif %}</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">T</div><h2>No staff accounts yet</h2><p>Create an account to give someone access to student management.</p><a class="button button-dark" href="{% url 'students:staff-create' %}">Add a staff account</a></div>
+    {% endif %}
+</section>
+{% endblock %}

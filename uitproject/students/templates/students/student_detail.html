@@ -1,0 +1,26 @@
+{% extends "students/base.html" %}
+
+{% block title %}{{ student.name }} · Student Desk{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'students:list' %}">Students</a> / Profile</p>
+<section class="detail-heading">
+    <div class="avatar">{{ student.name|first|upper }}</div>
+    <div class="detail-title"><p class="eyebrow">STUDENT PROFILE</p><h1>{{ student.name }}</h1><p class="muted">{{ student.course }}</p></div>
+    <span class="status-pill {% if student.is_active %}status-active{% else %}status-inactive{% endif %}">{{ student.is_active|yesno:"Active,Inactive" }}</span>
+    <div class="heading-actions">
+        <a class="button button-quiet" href="{% url 'students:update' student.pk %}">Edit details</a>
+        <a class="button button-danger" href="{% url 'students:delete' student.pk %}">Delete</a>
+    </div>
+</section>
+<section class="panel detail-panel">
+    <h2>Information</h2>
+    <dl class="detail-grid">
+        <div><dt>Email</dt><dd><a href="mailto:{{ student.email }}">{{ student.email }}</a></dd></div>
+        <div><dt>Phone</dt><dd>{{ student.phone|default:"Not provided" }}</dd></div>
+        <div><dt>Course</dt><dd>{{ student.course }}</dd></div>
+        <div><dt>Enrollment date</dt><dd>{{ student.enrollment_date|date:"F j, Y" }}</dd></div>
+        <div><dt>Record created</dt><dd>{{ student.created_at|date:"F j, Y" }}</dd></div>
+    </dl>
+</section>
+{% endblock %}

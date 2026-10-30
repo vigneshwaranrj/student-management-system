@@ -1,0 +1,84 @@
+{% extends "students/base.html" %}
+
+{% block title %}Students · Student Desk{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">PEOPLE / DIRECTORY</p>
+        <h1>Students</h1>
+        <p class="muted">Search, filter and manage your student records.</p>
+    </div>
+    <a class="button button-light" href="{% url 'students:export' %}?{{ query_string }}">Export CSV <span aria-hidden="true">↓</span></a>
+</section>
+
+<section class="panel">
+    <form class="search-form filter-form" method="get" role="search">
+        <label class="sr-only" for="student-search">Search students</label>
+        <input id="student-search" name="q" type="search" value="{{ search_query }}" placeholder="Search name, email or course">
+        <label class="sr-only" for="status-filter">Filter by status</label>
+        <select id="status-filter" name="status">
+            <option value="">All statuses</option>
+            <option value="active" {% if status_filter == "active" %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if status_filter == "inactive" %}selected{% endif %}>Inactive</option>
+        </select>
+        <label class="sr-only" for="course-filter">Filter by course</label>
+        <select id="course-filter" name="course">
+            <option value="">All courses</option>
+            {% for course in courses %}<option value="{{ course }}" {% if course_filter == course %}selected{% endif %}>{{ course }}</option>{% endfor %}
+        </select>
+        <label class="sr-only" for="sort-order">Sort students</label>
+        <select id="sort-order" name="sort">
+            <option value="name" {% if sort_order == "name" %}selected{% endif %}>Name A–Z</option>
+            <option value="-name" {% if sort_order == "-name" %}selected{% endif %}>Name Z–A</option>
+            <option value="-enrollment_date" {% if sort_order == "-enrollment_date" %}selected{% endif %}>Newest enrollment</option>
+            <option value="enrollment_date" {% if sort_order == "enrollment_date" %}selected{% endif %}>Oldest enrollment</option>
+            <option value="course" {% if sort_order == "course" %}selected{% endif %}>Course</option>
+        </select>
+        <button class="button button-dark" type="submit">Apply</button>
+        {% if search_query or status_filter or course_filter or sort_order != "name" %}<a class="button button-quiet" href="{% url 'students:list' %}">Clear</a>{% endif %}
+    </form>
+
+    <div class="table-caption"><span><strong>{{ filtered_count }}</strong> matching record{{ filtered_count|pluralize }}</span><span>Student directory</span></div>
+    {% if students %}
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Student</th><th>Email</th><th>Course</th><th>Status</th><th>Enrolled</th><th><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td><a class="student-name" href="{% url 'students:detail' student.pk %}">{{ student.name }}</a></td>
+                    <td>{{ student.email }}</td>
+                    <td><span class="course-tag">{{ student.course }}</span></td>
+                    <td><span class="status-pill {% if student.is_active %}status-active{% else %}status-inactive{% endif %}">{{ student.is_active|yesno:"Active,Inactive" }}</span></td>
+                    <td>{{ student.enrollment_date|date:"M j, Y" }}</td>
+                    <td class="row-actions"><a href="{% url 'students:update' student.pk %}">Edit</a><a class="danger-link" href="{% url 'students:delete' student.pk %}">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">S</div>
+        {% if search_query %}
+            <h2>No matching students</h2>
+            <p>Try a different name, email or course.</p>
+            <a class="button button-quiet" href="{% url 'students:list' %}">Clear search</a>
+        {% else %}
+            <h2>Your directory is ready</h2>
+            <p>Add your first student to get started.</p>
+            <a class="button button-dark" href="{% url 'students:create' %}">Add a student</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if is_paginated %}
+    <nav class="pagination" aria-label="Pagination">
+        {% if page_obj.has_previous %}<a href="?{{ query_string }}{% if query_string %}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>{% else %}<span></span>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?{{ query_string }}{% if query_string %}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>{% else %}<span></span>{% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

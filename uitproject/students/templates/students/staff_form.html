@@ -1,0 +1,31 @@
+{% extends "students/base.html" %}
+
+{% block title %}Add staff account · Student Desk{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'students:staff-list' %}">Team</a> / Add staff account</p>
+<section class="form-layout">
+    <div class="form-intro">
+        <p class="eyebrow">TEAM / NEW ACCOUNT</p>
+        <h1>Add staff account</h1>
+        <p class="muted">This account can manage student records. It will not have superuser access to Django or other staff accounts.</p>
+    </div>
+    <form class="panel form-panel" method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <p class="security-note">Use a unique temporary password and share it with the staff member privately. Never send passwords in a group chat.</p>
+        <div class="form-actions">
+            <a class="button button-quiet" href="{% url 'students:staff-list' %}">Cancel</a>
+            <button class="button button-dark" type="submit">Create staff account</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
